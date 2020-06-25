@@ -19,14 +19,13 @@ namespace TokenJwtBearer.Controllers
         }
 
 
-        [HttpGet]
-        [Route("all")]
+        [HttpGet("all")]
+        [AllowAnonymous]
         public IActionResult GetUsers()
             => Ok(_service.ListUsers());
 
 
-        [HttpPost]
-        [Route("login")]
+        [HttpPost("login")]
         [AllowAnonymous]
         public IActionResult Authenticate([FromBody]Usuario model)
         {
@@ -36,7 +35,7 @@ namespace TokenJwtBearer.Controllers
                 return NotFound(new { message = "Usuário ou senha inválidos" });
 
             user.Password = "";
-            user.Token = TokenService.GenerateToken(user);
+            user.Token = _service.GetTokenUserLogin(user);
 
             return Ok(user);
         }
@@ -47,23 +46,19 @@ namespace TokenJwtBearer.Controllers
         */
 
 
-        [HttpGet]
-        [Route("anonymous")]
+        [HttpGet("anonymous")]
         [AllowAnonymous]
         public string Anonymous() => "Anônimo";
 
-        [HttpGet]
-        [Route("authenticated")]
+        [HttpGet("authenticated")]
         [Authorize]
         public string Authenticated() => String.Format("Autenticado - {0}", User.Identity.Name);
 
-        [HttpGet]
-        [Route("employee")]
+        [HttpGet("employee")]
         [Authorize(Roles = "admin,user")]
         public string Employee() => "Funcionário";
 
-        [HttpGet]
-        [Route("manager")]
+        [HttpGet("manager")]
         [Authorize(Roles = "admin")]
         public string Manager() => "Gerente";
     }

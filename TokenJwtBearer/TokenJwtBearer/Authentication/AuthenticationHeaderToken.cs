@@ -1,26 +1,28 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TokenJwtBearer.Models;
+using TokenJwtBearer.Models.Security;
 
-namespace TokenJwtBearer.Services
+namespace TokenJwtBearer.Authentication
 {
-    public static class TokenService
+    public static class AuthenticationHeaderToken
     {
-        public static string GenerateToken(Usuario usuario)
+        public static string GenerationToken(Usuario usuario)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("f41c2b700b583c084c3959b4717d80fcc69c3f3f3dc2a74a6620ec7753b6888d");
+            var key = Encoding.ASCII.GetBytes(Security.Securitykey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, usuario.Name.ToString()),
-                    new Claim(ClaimTypes.Role, usuario.Role.ToString())
+                    new Claim(ClaimTypes.Role, usuario.Role.ToString()),
+                    new Claim(ClaimTypes.Email, usuario.Email.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddHours(2),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

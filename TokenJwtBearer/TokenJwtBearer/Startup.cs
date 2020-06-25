@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using TokenJwtBearer.Models;
+using TokenJwtBearer.Models.Security;
 using TokenJwtBearer.Services;
 
 namespace TokenJwtBearer
@@ -26,36 +27,40 @@ namespace TokenJwtBearer
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddCors();
             services.AddControllers();
 
-
-            var key = Encoding.ASCII.GetBytes("f41c2b700b583c084c3959b4717d80fcc69c3f3f3dc2a74a6620ec7753b6888d");
+            var key = Encoding.ASCII.GetBytes(Security.Securitykey);
 
             services.AddAuthentication(x =>
             {
+
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            })
-            .AddJwtBearer(x =>
+            }).AddJwtBearer(x =>
             {
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
+
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false
+
                 };
             });
+
 
             var cache = new CacheService();
             Database(cache.Cache);
 
             services.AddSingleton(cache);
             services.AddScoped<AuthService>();
+
         }
 
 
@@ -101,7 +106,7 @@ namespace TokenJwtBearer
                 new Usuario()
                 {
                     Name = "carlos",
-                    Password = "4321",
+                    Password = "1234",
                     Email = "carlos@email.com",
                     Role = "user",
                     Token = null
